@@ -6,7 +6,14 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Start SSH via tmate
-        uses: mxschmitt/action-tmate@v3
-        with:
-          limit-access-to-actor: false
+      - name: Install tmate
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq tmate
+      - name: Start tmate
+        run: |
+          tmate -F -n vps new-session -d
+          sleep 3
+          tmate -S /tmp/tmate.sock display -p '#{tmate_ssh}'
+          tmate -S /tmp/tmate.sock wait tmate-ready
+          sleep 21600
