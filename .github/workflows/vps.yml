@@ -9,4 +9,4 @@ jobs:
       - name: Start SSH via tmate
         uses: mxschmitt/action-tmate@v3
         with:
-          limit-access-to-actor: true
+          limit-access-to-actor: false
