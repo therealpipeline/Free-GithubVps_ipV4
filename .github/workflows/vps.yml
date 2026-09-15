@@ -6,15 +6,18 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Setup tmate fallback
-        run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y -qq openssh-server
-          echo "SSH is not exposed publicly; install Tailscale instead"
       - name: Install Tailscale
         run: |
           curl -fsSL https://tailscale.com/install.sh | sh
           sudo tailscale up --authkey=${{ secrets.TAILSCALE_AUTHKEY }}
           tailscale ip -4
+
+      - name: Set password
+        run: |
+          echo 'runner:MyPass' | sudo chpasswd
+          sudo sed -i 's/^#\?PasswordAuthentication.*/PasswordAuthentication yes/' /etc/ssh/sshd_config
+          sudo sed -i 's/^#\?KbdInteractiveAuthentication.*/KbdInteractiveAuthentication yes/' /etc/ssh/sshd_config
+          sudo systemctl restart ssh
+
       - name: Keep alive
         run: sleep 21600
